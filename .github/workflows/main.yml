@@ -9,7 +9,6 @@ on:
 env:
   AZURE_WEBAPP_NAME: cicddemo
   AZURE_WEBAPP_PACKAGE_PATH: "./publish"
-  AZURE_PUBLISH_PROFILE: ${{ secrets.AZURE_PUBLISH_PROFILE }}
 
 jobs:
   publish:
@@ -38,10 +37,10 @@ jobs:
       - name: Publish application
         run: dotnet publish ./CI-CD-Demo.sln --configuration Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
 
-      # Deploy the application to Azure
-      - name: Deploy to Azure WebApp
+      # Deployment the application
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ env.AZURE_PUBLISH_PROFILE }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}  # Replace with your publish profile secret name
+          package: "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
