@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "SbvWE8QnlUTlT1OqbMJ/t+ApLkwMUHj8jasr70w0oR4=",
+  "Source": "CI-CD-Demo",
+  "BasePath": "_content/CI-CD-Demo",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
