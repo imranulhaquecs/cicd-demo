@@ -1,46 +1,45 @@
-name: Publish
+name: Build and Deploy to Azure
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
-
-env:
-  AZURE_WEBAPP_NAME: cicddemo
-  AZURE_WEBAPP_PACKAGE_PATH: "./publish"
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  publish:
+  build:
+    name: Build and Deploy
     runs-on: ubuntu-latest
 
     steps:
-      # Check out the repository
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-      # Setup .NET
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '8.0.x' # Use .NET Core 8.0
 
-      # Restore dependencies
-      - name: Restore dependencies
-        run: dotnet restore ./CI-CD-Demo.sln
+      - name: Restore Dependencies
+        run: dotnet restore
 
-      # Build the solution
-      - name: Build solution
-        run: dotnet build ./CI-CD-Demo.sln --configuration Release --no-restore
+      - name: Build the Application
+        run: dotnet build --configuration Release --no-restore
 
-      # Publish the application
-      - name: Publish application
-        run: dotnet publish ./CI-CD-Demo.sln --configuration Release --no-build --output '${{ env.AZURE_WEBAPP_PACKAGE_PATH }}'
+      - name: Publish the Application
+        run: dotnet publish -c Release -o ./publish_output
 
-      # Deployment the application
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}  # Replace with your publish profile secret name
-          package: "${{ env.AZURE_WEBAPP_PACKAGE_PATH }}"
+          app-name: 'cicddemo' # Azure Web App name
+          slot-name: 'production' # Use 'production' slot
+          publish-profile: ${{ secrets.AZURE_PUBLISH_PROFILE }}
+          package: ./publish_output
+
+# Notes:
+# 1. Replace 'AZURE_WEBAPP_PUBLISH_PROFILE' with the publish profile secret of your Azure Web App.
+# 2. To set the secret, go to your GitHub repository > Settings > Secrets and Variables > Actions > New repository secret.
+# 3. Paste the content of your Azure publish profile (cicddemo.PublishSettings) as the value for the secret.
